@@ -20,6 +20,15 @@ export const CMD = {
   enablePrinter: [0x10, 0xff, 0xfe, 0x01],
   stopPrint: [0x10, 0xff, 0xfe, 0x45],
   formFeed: [0x1d, 0x0c],
+  feedDots: (dots: number) => {
+    const cmds: number[] = [];
+    while (dots > 0) {
+      const chunk = Math.min(dots, 255);
+      cmds.push(0x1b, 0x4a, chunk);
+      dots -= chunk;
+    }
+    return cmds;
+  },
   factoryReset: [0x10, 0xff, 0x04],
 } as const;
 

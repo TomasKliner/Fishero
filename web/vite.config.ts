@@ -10,7 +10,7 @@ const getDate = (): string => {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: process.env.GITHUB_PAGES ? "/fichero-printer/" : "/",
+  base: process.env.GITHUB_PAGES ? "/Fishero/" : "/",
   plugins: [svelte()],
   define: {
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version),

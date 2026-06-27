@@ -14,6 +14,7 @@ from fichero.printer import (
     DELAY_AFTER_FEED,
     DELAY_COMMAND_GAP,
     DELAY_RASTER_SETTLE,
+    PAPER_CONTINUOUS,
     PAPER_GAP,
     PrinterClient,
     PrinterError,
@@ -73,10 +74,12 @@ async def do_print(
         await pc.send_chunked(header + raster)
 
         await asyncio.sleep(DELAY_RASTER_SETTLE)
-        await pc.form_feed()
-        await asyncio.sleep(DELAY_AFTER_FEED)
-
-        ok = await pc.stop_print()
+        if paper == PAPER_CONTINUOUS:
+            ok = await pc.stop_print()
+        else:
+            await pc.form_feed()
+            await asyncio.sleep(DELAY_AFTER_FEED)
+            ok = await pc.stop_print()
         if not ok:
             print("  WARNING: no OK/0xAA from stop command")
 

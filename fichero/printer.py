@@ -331,8 +331,11 @@ class PrinterClient:
         await self.send(bytes([0x10, 0xFF, 0xFE, 0x01]))
 
     async def feed_dots(self, dots: int) -> None:
-        """Feed paper forward by n dots."""
-        await self.send(bytes([0x1B, 0x4A, dots & 0xFF]))
+        """Feed paper forward by n dots (handles >255 by looping)."""
+        while dots > 0:
+            chunk = min(dots, 255)
+            await self.send(bytes([0x1B, 0x4A, chunk]))
+            dots -= chunk
 
     async def form_feed(self) -> None:
         """Position to next label."""

@@ -1,6 +1,6 @@
 import { BYTES_PER_ROW, CHUNK_DELAY_MS, CHUNK_SIZE, CMD } from "./constants";
 import { Utils } from "./utils";
-import type { EncodedImage, LabelType, PrintProgressEvent } from "./types";
+import { LabelType, type EncodedImage, type PrintProgressEvent } from "./types";
 
 export interface PrintTaskOptions {
   totalPages: number;
@@ -85,9 +85,12 @@ export class FicheroPrintTask extends AbstractPrintTask {
       await this.sendChunked(payload);
       await Utils.sleep(500);
 
-      // Form feed
-      await this.sendCmd(Array.from(CMD.formFeed));
-      await Utils.sleep(300);
+      if (this.opts.labelType === LabelType.Continuous) {
+        await this.sendCmd(CMD.feedDots(image.rows), true);
+      } else {
+        await this.sendCmd(Array.from(CMD.formFeed));
+        await Utils.sleep(300);
+      }
 
       this.emitProgress({
         page: copy + 1,
